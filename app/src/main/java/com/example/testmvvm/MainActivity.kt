@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,12 +19,26 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: NoteAdapter
 
     val ADD_NOTE_REQUEST = 0
+    val EDIT_NOTE_REQUEST = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         adapter = NoteAdapter()
+
+        adapter.setOnItemClickListener(object : NoteAdapter.OnItemClickListener {
+            override fun onItemClick(note: Note) {
+                val intent = Intent(this@MainActivity, AddEditNoteActivity::class.java)
+
+                intent.putExtra(AddEditNoteActivity.EXTRA_ID, note.id)
+                intent.putExtra(AddEditNoteActivity.EXTRA_TITLE, note.title)
+                intent.putExtra(AddEditNoteActivity.EXTRA_PRIORITY, note.priority)
+                intent.putExtra(AddEditNoteActivity.EXTRA_DESCRIPTION, note.description)
+
+                startActivityForResult(intent, EDIT_NOTE_REQUEST)
+            }
+        })
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
@@ -51,7 +64,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onClick(view: View) {
         when(view) {
-            btnAddNote -> startActivityForResult(Intent(this, AddNoteActivity::class.java), ADD_NOTE_REQUEST)
+            btnAddNote -> startActivityForResult(Intent(this, AddEditNoteActivity::class.java), ADD_NOTE_REQUEST)
         }
     }
 
@@ -59,13 +72,31 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == ADD_NOTE_REQUEST && resultCode == RESULT_OK) {
-            val title = data?.getStringExtra(AddNoteActivity.EXTRA_TITLE)!!
-            val description = data.getStringExtra(AddNoteActivity.EXTRA_DESCRIPTION)!!
-            val priority = data.getIntExtra(AddNoteActivity.EXTRA_PRIORITY, 0)
+            val title = data?.getStringExtra(AddEditNoteActivity.EXTRA_TITLE)!!
+            val description = data.getStringExtra(AddEditNoteActivity.EXTRA_DESCRIPTION)!!
+            val priority = data.getIntExtra(AddEditNoteActivity.EXTRA_PRIORITY, 0)
 
             val note = Note(title, description, priority)
 
             noteViewModel.insert(note)
+
+            Toast.makeText(this, "Noted added", Toast.LENGTH_SHORT).show()
+        } else if (requestCode == EDIT_NOTE_REQUEST && resultCode == RESULT_OK) {
+
+            val id = data?.getIntExtra(AddEditNoteActivity.EXTRA_ID, -1)
+
+            if (id == -1) return
+
+            val title = data?.getStringExtra(AddEditNoteActivity.EXTRA_TITLE)!!
+            val description = data.getStringExtra(AddEditNoteActivity.EXTRA_DESCRIPTION)!!
+            val priority = data.getIntExtra(AddEditNoteActivity.EXTRA_PRIORITY, 0)
+
+            val note = Note(title, description, priority)
+            note.id = id
+
+            noteViewModel.update(note)
+
+            Toast.makeText(this, "Note updated", Toast.LENGTH_SHORT).show()
         }
     }
 
