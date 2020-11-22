@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".employee.SplashActivity"
-    android:background="@color/black">
+    tools:context=".employee.SplashActivity">
 
     <ImageView
+        android:id="@+id/logoTredo"
         android:src="@drawable/logo_blck"
         android:layout_width="200dp"
         android:layout_height="200dp"
