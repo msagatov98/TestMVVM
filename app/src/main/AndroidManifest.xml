@@ -9,10 +9,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TestMVVM">
-        <activity android:name=".AddEditNoteActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-
-        <activity android:name=".MainActivity"
+        <activity android:name=".employee.EmployeeActivity"></activity>
+        <activity android:name=".employee.EmployeeListActivity" />
+        <activity android:name=".employee.SplashActivity" />
+        <activity
+            android:name=".AddEditNoteActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".MainActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
